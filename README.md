@@ -57,26 +57,52 @@ migrations/
 └── builder.lock                     # pinned Builder version (0.14.0)
 ```
 
+## Pre-loaded data
+
+The repository ships two seed scripts to populate the database with
+real OBD-II catalogue data and a small demo fleet:
+
+- `data/dtc_codes_real.csv` — **4311 deduplicated DTCs**, sourced
+  from [`abdulwahed-sweden/odb-codes-to-json`](https://github.com/abdulwahed-sweden/odb-codes-to-json)
+  (SAE J2012 + ISO 15031). Distribution: 3538 Powertrain, 556
+  Network, 133 Body, 84 Chassis. Severity breakdown: 543 Critical,
+  2148 Warning, 1620 Info.
+- `scripts/seed_real_dtcs.sql` — TRUNCATE + COPY the CSV into the
+  `diagnostic_codes` table.
+- `scripts/seed_demo_vehicles.sql` — 3 vehicles, 2 scan sessions, 3
+  detected faults. Soft-FKs (`P0171`, `P0420`, `P0455`) resolve
+  against the loaded DTC catalogue.
+
 ## Getting it running
 
-Prerequisites: Rust ≥ 1.88, PostgreSQL 14+.
+Prerequisites: Rust ≥ 1.88, PostgreSQL 14+, and a local checkout of
+[`rustio-admin`](https://github.com/abdulwahed-sweden/rustio-admin)
+**until its v0.14.1 ships to crates.io**. The `[patch.crates-io]`
+block in `Cargo.toml` currently points at an absolute local path —
+update it to wherever your `rustio-admin` checkout lives. The
+`rustio` binary referenced in the steps below is
+`<rustio-admin checkout>/target/debug/rustio` (`cargo install
+--path crates/rustio-admin-cli` makes it global).
 
 ```sh
 # 1. Bring up Postgres (any 14+ instance is fine)
 createdb obddesk_dev
 
 # 2. Set the connection string
-echo 'DATABASE_URL=postgres://postgres@localhost/obddesk_dev' > .env
+cp .env.example .env       # then edit DATABASE_URL for your Postgres user
 
-# 3. Apply the migration
-cargo run -p rustio-admin-cli -- migrate apply
+# 3. Apply the framework migration + obddesk's 0001_initial.sql
+rustio migrate apply
 
-# 4. Seed the first administrator
-cargo run -p rustio-admin-cli -- user create \
-    --email admin@obddesk.local --role administrator
+# 4. Load the real DTC catalogue + a small demo fleet
+psql -d obddesk_dev -f scripts/seed_real_dtcs.sql
+psql -d obddesk_dev -f scripts/seed_demo_vehicles.sql
 
-# 5. Start the admin
-cargo run
+# 5. Seed the first administrator
+rustio user create --email admin@obddesk.local --role administrator
+
+# 6. Start the admin
+cargo run --release
 ```
 
 The admin panel lands at <http://127.0.0.1:8000/admin>. Sign in with

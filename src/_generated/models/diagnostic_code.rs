@@ -54,4 +54,20 @@ impl Model for DiagnosticCode {
     }
 }
 
-impl ModelAdmin for DiagnosticCode {}
+impl ModelAdmin for DiagnosticCode {
+    fn list_display() -> &'static [&'static str] {
+        &["code", "short_title", "system_category", "code_type", "severity_level"]
+    }
+    fn list_filter() -> &'static [&'static str] {
+        &["system_category", "code_type", "severity_level"]
+    }
+    fn search_fields() -> &'static [&'static str] {
+        &["code", "short_title", "detailed_description"]
+    }
+    fn ordering() -> &'static [&'static str] {
+        &["code"]
+    }
+    fn list_per_page() -> usize {
+        50
+    }
+}

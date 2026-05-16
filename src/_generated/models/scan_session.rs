@@ -51,4 +51,14 @@ impl Model for ScanSession {
     }
 }
 
-impl ModelAdmin for ScanSession {}
+impl ModelAdmin for ScanSession {
+    fn list_display() -> &'static [&'static str] {
+        &["session_reference", "vehicle_vin", "performed_by_technician", "mileage_km", "created_at"]
+    }
+    fn search_fields() -> &'static [&'static str] {
+        &["session_reference", "vehicle_vin", "performed_by_technician"]
+    }
+    fn ordering() -> &'static [&'static str] {
+        &["-created_at"]
+    }
+}

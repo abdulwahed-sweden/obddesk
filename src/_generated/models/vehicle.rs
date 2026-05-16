@@ -54,4 +54,17 @@ impl Model for Vehicle {
     }
 }
 
-impl ModelAdmin for Vehicle {}
+impl ModelAdmin for Vehicle {
+    fn list_display() -> &'static [&'static str] {
+        &["vin", "make_name", "model_name", "model_year", "fuel_type"]
+    }
+    fn list_filter() -> &'static [&'static str] {
+        &["make_name", "fuel_type"]
+    }
+    fn search_fields() -> &'static [&'static str] {
+        &["vin", "make_name", "model_name"]
+    }
+    fn ordering() -> &'static [&'static str] {
+        &["make_name", "model_name"]
+    }
+}

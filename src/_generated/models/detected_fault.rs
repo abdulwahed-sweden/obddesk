@@ -51,4 +51,17 @@ impl Model for DetectedFault {
     }
 }
 
-impl ModelAdmin for DetectedFault {}
+impl ModelAdmin for DetectedFault {
+    fn list_display() -> &'static [&'static str] {
+        &["fault_reference", "session_reference", "diagnostic_code", "is_resolved", "created_at"]
+    }
+    fn list_filter() -> &'static [&'static str] {
+        &["is_resolved"]
+    }
+    fn search_fields() -> &'static [&'static str] {
+        &["fault_reference", "diagnostic_code", "session_reference"]
+    }
+    fn ordering() -> &'static [&'static str] {
+        &["-created_at"]
+    }
+}
