@@ -12,6 +12,22 @@ an append-only event log.
 
 ---
 
+## Screenshots
+
+Live admin captured against `rustio-admin = "0.15.1"` (dark-frame
+chrome refinement). See
+[`docs/screenshots/v0.15.1/README.md`](docs/screenshots/v0.15.1/README.md)
+for the full set + per-shot annotations.
+
+| Surface | Preview |
+|---|---|
+| Dashboard | [`02-dashboard.png`](docs/screenshots/v0.15.1/02-dashboard.png) |
+| Diagnostic codes (4311 real DTCs) | [`03-diagnostic-codes.png`](docs/screenshots/v0.15.1/03-diagnostic-codes.png) |
+| Vehicles | [`04-vehicles.png`](docs/screenshots/v0.15.1/04-vehicles.png) |
+| Scan sessions | [`05-scan-sessions.png`](docs/screenshots/v0.15.1/05-scan-sessions.png) |
+| Detected faults (with filters) | [`06-detected-faults.png`](docs/screenshots/v0.15.1/06-detected-faults.png) |
+| Login | [`01-login.png`](docs/screenshots/v0.15.1/01-login.png) |
+
 ## Domain
 
 Four core models, each with a clear single purpose:
