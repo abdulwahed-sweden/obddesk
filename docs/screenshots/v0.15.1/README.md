@@ -16,6 +16,7 @@ Each PNG is 1440 × 900 px, headless Chrome 148, default zoom.
 | [`04-vehicles.png`](04-vehicles.png) | `/admin/vehicles` | 3 vehicles with their full VINs rendered in monospaced tabular-num for column alignment. The "Add Vehicle" button's lifted teal-emerald gradient pops cleanly against the lighter content area. |
 | [`05-scan-sessions.png`](05-scan-sessions.png) | `/admin/scan_sessions` | `SESSION_REFERENCE` column anchored bold; ISO-8601 timestamps in mono+tabular so dates line up vertically. |
 | [`06-detected-faults.png`](06-detected-faults.png) | `/admin/detected_faults` | The "Filters" dropdown — auto-surfaced from the project's `ModelAdmin::list_filter = ["is_resolved"]` override. Zebra striping visible against the deeper canvas. |
+| [`07-sidebar-closeup.png`](07-sidebar-closeup.png) | `/admin` (crop) | Close-up of the overridden sidebar. Brand lockup ( OBD-II connector glyph + `OBD Desk` wordmark + `DIAGNOSTICS` subtitle ) on top; the `DIAGNOSTICS` section groups the four obddesk catalogues each with a thematic glyph — 4-rectangle grid for `Diagnostic codes`, car silhouette for `Vehicles`, scope-with-waveform for `Scan sessions`, alert triangle for `Detected faults`. `AUTH` section below holds framework-default `users` / `users-2` / `clock` icons. |
 
 ## What changed vs. earlier versions
 
