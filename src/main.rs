@@ -8,6 +8,7 @@
 mod _generated;
 
 use std::env;
+use std::path::PathBuf;
 
 use rustio_admin::templates::Templates;
 use rustio_admin::{auth, middleware, register_admin_routes, Db, Result, Router, Server};
@@ -41,8 +42,17 @@ async fn main() -> Result<()> {
     // 4. Seed per-model view / add / change / delete permissions.
     admin.seed_permissions(&db).await?;
 
-    // 5. Embedded templates (no disk override).
-    let templates = Templates::new(None)?;
+    // 5. Templates — point at the project's `templates/` directory
+    //    so files under `templates/admin/*.html` override the
+    //    framework's embedded copies for that page. Files not
+    //    overridden continue to load from the embedded set.
+    //    The override path can be relocated via
+    //    `RUSTIO_TEMPLATE_DIR` for ops who want to deploy
+    //    templates alongside the binary without baking them in.
+    let template_dir = env::var("RUSTIO_TEMPLATE_DIR")
+        .map(PathBuf::from)
+        .unwrap_or_else(|_| PathBuf::from("templates"));
+    let templates = Templates::new(Some(template_dir))?;
 
     // 6. Canonical middleware chain. Order is load-bearing
     //    (DESIGN_SESSIONS.md / DESIGN_AUDIT.md).

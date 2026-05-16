@@ -1,0 +1,145 @@
+{# obddesk override of the framework's index.html.
+   Replaces the generic "models you can manage" list with an OBD-II
+   operator dashboard: a welcome panel, per-model context cards
+   describing what each catalogue does, an operator-workflow guide,
+   and the framework's audit-log Recent actions list (untouched).
+
+   Loaded when `RUSTIO_TEMPLATE_DIR=templates` is set; falls back to
+   the embedded copy in framework/assets/templates/admin/index.html
+   otherwise. #}
+{% extends "admin/_base.html" %}
+{% block content %}
+<header class="rio-page-header">
+  <h1>{{ index_title }}</h1>
+  <p class="rio-meta" style="margin-top: 0.35rem; max-width: 60ch;">
+    Operator workstation for OBD-II diagnostics. Catalogue, fleet
+    register, scan log, and fault tracker — all on one Postgres-
+    backed admin. Sign-in attempts, schema changes, and authority
+    mutations are recorded in the audit log below.
+  </p>
+</header>
+
+{% if apps %}
+<section class="rio-card" style="padding-top: var(--rio-s4);">
+  <h2 style="font-size: var(--rio-fs-xs); font-weight: 600;
+             text-transform: uppercase;
+             letter-spacing: var(--rio-tracking-allcaps);
+             color: var(--rio-text-muted);
+             margin: 0 0 var(--rio-s4);">
+    Catalogues
+  </h2>
+
+  <div style="display: grid; gap: var(--rio-s4);
+              grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+    {% for app in apps %}
+      {% for model in app.models %}
+      <article style="border: 1px solid var(--rio-border-soft);
+                      border-radius: var(--rio-radius);
+                      padding: var(--rio-s4) var(--rio-s5);
+                      background: var(--rio-surface);">
+        <h3 style="margin: 0 0 var(--rio-s2);
+                   font-size: var(--rio-fs-lg);
+                   font-weight: 700;
+                   letter-spacing: var(--rio-tracking-heading);">
+          <a href="/admin/{{ model.admin_name }}"
+             style="color: var(--rio-text-strong); text-decoration: none;">
+            {{ model.display_name }}
+          </a>
+        </h3>
+
+        <p class="rio-meta" style="margin: 0 0 var(--rio-s4);
+                                   font-size: var(--rio-fs-sm);
+                                   line-height: var(--rio-lh-ui);">
+          {% if model.admin_name == "diagnostic_codes" %}
+            Canonical OBD-II DTC catalogue (SAE&nbsp;J2012 /
+            ISO&nbsp;15031). Powertrain, Body, Chassis, and Network
+            codes with severity classification.
+          {% elif model.admin_name == "vehicles" %}
+            Registered fleet — one row per VIN with make, model,
+            year, engine displacement, and fuel type.
+          {% elif model.admin_name == "scan_sessions" %}
+            Diagnostic-event log. Each session captures the vehicle,
+            mileage, technician, and free-form notes.
+          {% elif model.admin_name == "detected_faults" %}
+            Detected faults observed within each scan, tracked
+            through to resolution with technician notes.
+          {% else %}
+            Catalogue managed by this admin.
+          {% endif %}
+        </p>
+
+        <div style="display: flex; gap: var(--rio-s2); flex-wrap: wrap;">
+          <a class="rio-button rio-button--ghost"
+             href="/admin/{{ model.admin_name }}">
+            {{ icon("table", class="rio-icon") }} Browse
+          </a>
+          <a class="rio-button rio-button--ghost"
+             href="/admin/{{ model.admin_name }}/new">
+            {{ icon("plus", class="rio-icon") }} Add new
+          </a>
+        </div>
+      </article>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</section>
+{% else %}
+<section class="rio-card rio-empty">
+  <p>No models registered yet. Call <code>Admin::new().model::&lt;YourModel&gt;()</code> in your <code>main.rs</code>.</p>
+</section>
+{% endif %}
+
+<section class="rio-card" style="padding-top: var(--rio-s4);">
+  <h2 style="font-size: var(--rio-fs-xs); font-weight: 600;
+             text-transform: uppercase;
+             letter-spacing: var(--rio-tracking-allcaps);
+             color: var(--rio-text-muted);
+             margin: 0 0 var(--rio-s3);">
+    Operator workflow
+  </h2>
+  <ol style="margin: 0; padding-left: var(--rio-s5);
+             font-size: var(--rio-fs-md); line-height: var(--rio-lh-body);
+             color: var(--rio-text);">
+    <li><strong>Register the vehicle.</strong>
+        Add a <a href="/admin/vehicles/new">new VIN</a> with make,
+        model, model year, engine displacement, and fuel type.</li>
+    <li><strong>Open a scan session.</strong>
+        Create a <a href="/admin/scan_sessions/new">scan session</a>
+        against the vehicle's VIN, recording mileage and the technician.</li>
+    <li><strong>Record detected faults.</strong>
+        For each DTC observed during the scan, file a
+        <a href="/admin/detected_faults/new">detected fault</a>
+        referencing the session and the diagnostic code.</li>
+    <li><strong>Resolve and document.</strong>
+        Edit the fault row, set <em>is&nbsp;resolved</em>, and
+        capture a resolution summary the next technician can rely on.</li>
+  </ol>
+</section>
+
+<section class="rio-card rio-recent">
+  <h2 style="font-size: var(--rio-fs-xs); font-weight: 600;
+             text-transform: uppercase;
+             letter-spacing: var(--rio-tracking-allcaps);
+             color: var(--rio-text-muted);
+             margin: 0 0 var(--rio-s3);">
+    Recent actions
+  </h2>
+  {% if recent_actions %}
+  <ul class="rio-timeline">
+    {% for a in recent_actions %}
+    <li class="rio-timeline-item">
+      <span class="rio-pill rio-pill--{{ a.pill_class }}">{{ a.label }}</span>
+      <a href="/admin/{{ a.model_name }}">{{ a.model_name }}</a>
+      #<a href="/admin/{{ a.model_name }}/{{ a.object_id }}/edit">{{ a.object_id }}</a>
+      {% if a.summary %}— {{ a.summary }}{% endif %}
+      <span class="rio-meta">{{ a.user_email }} · {{ a.when_relative }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="rio-meta">No actions recorded yet. Every authority mutation
+     (model row created / edited / deleted, password change, MFA
+     enrolment) lands here with the actor and timestamp.</p>
+  {% endif %}
+</section>
+{% endblock %}

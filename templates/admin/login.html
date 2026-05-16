@@ -1,0 +1,37 @@
+{# obddesk override of the framework's login.html.
+   Adds an OBD-II tagline above the form + a one-line note below
+   so the sign-in surface signals what the service does without
+   crossing into marketing territory (DESIGN_DOCTRINE.md §6.7).
+   Form fields, CSRF, and submit semantics are unchanged. #}
+{% extends "admin/_base.html" %}
+{% block sidebar %}{% endblock %}
+{% block content %}
+<div class="rio-login">
+  <h1 class="rio-login-title">{{ site_header }}</h1>
+  <p class="rio-meta"
+     style="text-align: center; margin: -0.35rem 0 var(--rio-s5);
+            font-size: var(--rio-fs-sm);
+            letter-spacing: var(--rio-tracking-allcaps);
+            text-transform: uppercase;
+            color: var(--rio-text-muted);">
+    OBD-II Diagnostics · Operator Workstation
+  </p>
+  {% if error %}<div class="rio-flash rio-flash--error" role="alert">{{ error }}</div>{% endif %}
+  <form method="post" action="/admin/login" class="rio-form rio-form--login" autocomplete="on">
+    <input type="hidden" name="_csrf" value="{{ csrf_token }}">
+    {% for section in sections %}
+      {% for field in section.fields %}{% include "admin/includes/_form_field.html" %}{% endfor %}
+    {% endfor %}
+    <button type="submit" class="rio-button rio-button--primary">Sign in</button>
+  </form>
+  <p class="rio-login-footer">
+    <a href="/admin/forgot-password">Forgot your password?</a>
+  </p>
+  <p class="rio-meta"
+     style="text-align: center; margin-top: var(--rio-s5);
+            font-size: var(--rio-fs-xs);
+            color: var(--rio-text-subtle);">
+    Vehicle catalogue · scan log · fault tracker · audit trail
+  </p>
+</div>
+{% endblock %}
