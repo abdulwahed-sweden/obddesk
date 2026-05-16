@@ -149,7 +149,7 @@ type = "text"
 unique = false
 
 [project]
-builder_pinned = "0.14.1"
+builder_pinned = "0.15.0"
 created_at = "2026-05-16T16:37:56Z"
 name = "obddesk"
 rust_version = "1.88"

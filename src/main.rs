@@ -9,7 +9,6 @@ mod _generated;
 
 use std::env;
 
-use rustio_admin::admin::AdminTheme;
 use rustio_admin::templates::Templates;
 use rustio_admin::{auth, middleware, register_admin_routes, Db, Result, Router, Server};
 
@@ -29,27 +28,15 @@ async fn main() -> Result<()> {
     auth::init_tables(&db).await?;
 
     // 3. Build the admin from generator output, then layer on
-    //    project-specific branding and a high-contrast text theme.
-    //    The framework's default `--rio-text` / `--rio-text-muted`
-    //    are tuned for a ten-hour operator shift; this project
-    //    runs them a few stops darker because diagnostic readouts
-    //    are skim-read against table backgrounds and small text.
+    //    project-specific branding. The `AdminTheme` text/border
+    //    overrides that this project carried under rustio-admin
+    //    0.14 are now redundant — v0.15.0's framework defaults
+    //    deliver the same contrast (Principles 9–11). The block
+    //    is gone; the visual is identical or slightly improved.
     let admin = _generated::admin::build_admin()
         .app_name("OBD Desk")
         .app_tagline("Operator workstation for OBD-II diagnostics")
-        .public_url("http://127.0.0.1:8000")
-        .theme(AdminTheme {
-            // Darker primary text — moves from the framework's
-            // soft slate (~#2D3033) to a near-black graphite.
-            text: Some("#0F1115".to_string()),
-            // Darker muted text — moves from ~#5A6168 to a
-            // deeper steel so secondary labels stay readable.
-            text_muted: Some("#3B4148".to_string()),
-            // Slightly firmer border for table-row separation.
-            border: Some("#C9CFD5".to_string()),
-            // Leave accent / bg / surface at framework defaults.
-            ..AdminTheme::new()
-        });
+        .public_url("http://127.0.0.1:8000");
 
     // 4. Seed per-model view / add / change / delete permissions.
     admin.seed_permissions(&db).await?;
