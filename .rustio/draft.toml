@@ -1,0 +1,155 @@
+schema_version = 1
+
+[[models]]
+name = "DiagnosticCode"
+table = "diagnostic_codes"
+
+[[models.fields]]
+name = "code"
+required = true
+type = "text"
+unique = true
+
+[[models.fields]]
+name = "short_title"
+required = true
+type = "text"
+unique = false
+
+[[models.fields]]
+name = "detailed_description"
+required = true
+type = "text"
+unique = false
+
+[[models.fields]]
+name = "system_category"
+required = true
+type = "text"
+unique = false
+
+[[models.fields]]
+name = "code_type"
+required = true
+type = "text"
+unique = false
+
+[[models.fields]]
+name = "severity_level"
+required = true
+type = "text"
+unique = false
+
+[[models]]
+name = "Vehicle"
+table = "vehicles"
+
+[[models.fields]]
+name = "vin"
+required = true
+type = "text"
+unique = true
+
+[[models.fields]]
+name = "make_name"
+required = true
+type = "text"
+unique = false
+
+[[models.fields]]
+name = "model_name"
+required = true
+type = "text"
+unique = false
+
+[[models.fields]]
+name = "model_year"
+required = true
+type = "integer"
+unique = false
+
+[[models.fields]]
+name = "engine_displacement_cc"
+required = true
+type = "integer"
+unique = false
+
+[[models.fields]]
+name = "fuel_type"
+required = true
+type = "text"
+unique = false
+
+[[models]]
+name = "ScanSession"
+table = "scan_sessions"
+
+[[models.fields]]
+name = "session_reference"
+required = true
+type = "text"
+unique = true
+
+[[models.fields]]
+name = "vehicle_vin"
+required = true
+type = "text"
+unique = false
+
+[[models.fields]]
+name = "mileage_km"
+required = true
+type = "integer"
+unique = false
+
+[[models.fields]]
+name = "performed_by_technician"
+required = true
+type = "text"
+unique = false
+
+[[models.fields]]
+name = "session_notes"
+required = true
+type = "text"
+unique = false
+
+[[models]]
+name = "DetectedFault"
+table = "detected_faults"
+
+[[models.fields]]
+name = "fault_reference"
+required = true
+type = "text"
+unique = true
+
+[[models.fields]]
+name = "session_reference"
+required = true
+type = "text"
+unique = false
+
+[[models.fields]]
+name = "diagnostic_code"
+required = true
+type = "text"
+unique = false
+
+[[models.fields]]
+name = "is_resolved"
+required = true
+type = "boolean"
+unique = false
+
+[[models.fields]]
+name = "resolution_summary"
+required = true
+type = "text"
+unique = false
+
+[project]
+builder_pinned = "0.14.0"
+created_at = "2026-05-16T16:37:56Z"
+name = "obddesk"
+rust_version = "1.88"
